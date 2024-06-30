@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
     Paper, Typography, Grid, TextField, Button, MenuItem, Box, Container, Select, InputLabel, FormControl
-  } from '@mui/material';
+} from '@mui/material';
+import axios from 'axios';
 
 const Add = () => {
   const [productName, setProductName] = useState('');
@@ -11,6 +12,8 @@ const Add = () => {
   const [year, setYear] = useState('');
   const [location, setLocation] = useState([]);
   const [image, setImage] = useState(null);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const storageOptions = [
     '64GB',
@@ -26,22 +29,47 @@ const Add = () => {
     'Ottapalam'
   ];
 
-
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     setImage(file);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // handle form submission
-    console.log({
-      productName,
-      batteryHealth,
-      storage,
-      year,
-      image
-    });
+    setError('');
+    setSuccess('');
+
+    const formData = new FormData();
+    formData.append('model_name', productName);
+    formData.append('battery_health', batteryHealth);
+    formData.append('storage', storage);
+    formData.append('color', color);
+    formData.append('year', year);
+    formData.append('location', JSON.stringify(location));
+    if (image) {
+      formData.append('image', image);
+    }
+
+    try {
+      const response = await axios.post('https://imate.pythonanywhere.com/api/phones/create/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(response.data);
+      setSuccess('Product added successfully!');
+      // Reset form fields
+      setProductName('');
+      setBatteryHealth('');
+      setStorage('');
+      setColor('');
+      setYear('');
+      setLocation([]);
+      setImage(null);
+    } catch (error) {
+      console.error('Error adding product:', error);
+      setError('Failed to add product. Please try again.');
+    }
   };
 
   return (
@@ -55,6 +83,8 @@ const Add = () => {
                   <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'rgb(24, 24, 96)' }}>
                     Add Product
                   </Typography>
+                  {error && <Typography color="error" align="center">{error}</Typography>}
+                  {success && <Typography color="success" align="center">{success}</Typography>}
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={3}>
                       <Grid item xs={12}>
@@ -93,7 +123,6 @@ const Add = () => {
                           ))}
                         </TextField>
                       </Grid>
-
                       <Grid item xs={12} sm={6}>
                         <TextField
                           label="Year"
