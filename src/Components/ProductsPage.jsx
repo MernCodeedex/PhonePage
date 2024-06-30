@@ -1,6 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+
+const PageContainer = styled.div`
+  position: relative;
+  padding-top: 60px;
+`;
+
+const AddButton = styled(Link)`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  &:hover {
+    background-color: #45a049;
+  }
+`;
 
 const ProductsContainer = styled.div`
   display: flex;
@@ -29,7 +50,7 @@ const ProductName = styled.div`
   text-align: center;
 `;
 
-const ProductLink = styled.a`
+const ProductLink = styled(Link)`
   color: #333;
   text-decoration: none;
   font-weight: bold;
@@ -52,25 +73,25 @@ const ProductsPage = () => {
   }, []);
 
   return (
-   <div>
-     <h2 style={{textAlign: "center"}}>All Products</h2>
-    <ProductsContainer>
-        
-      {products.map((product) => (
-        <ProductCard key={product.id}>
-          <ProductImage 
-            src={`https://imate.pythonanywhere.com${product.images}`} 
-            alt={product.name} 
-          />
-          <ProductName>
-            <ProductLink href={`/product/${product.id}`}>
-              {product.name}
-            </ProductLink>
-          </ProductName>
-        </ProductCard>
-      ))}
-    </ProductsContainer>
-   </div>
+    <PageContainer>
+      <AddButton style={{backgroundColor: "rgb(24, 24, 96)"}} to="/add">Add Product</AddButton>
+      <h2 style={{textAlign: "center"}}>All Products</h2>
+      <ProductsContainer>
+        {products.map((product) => (
+          <ProductCard key={product.id}>
+            <ProductImage 
+              src={`https://imate.pythonanywhere.com${product.images}`} 
+              alt={product.name} 
+            />
+            <ProductName>
+              <ProductLink to={`/product/${product.id}`}>
+                {product.name}
+              </ProductLink>
+            </ProductName>
+          </ProductCard>
+        ))}
+      </ProductsContainer>
+    </PageContainer>
   );
 };
 
